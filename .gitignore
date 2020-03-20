@@ -5,6 +5,7 @@
 bin
 target
 doc
+Maps
 *.jar
 .settings
 .classpath
