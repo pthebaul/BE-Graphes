@@ -139,7 +139,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     {
     	for (int i = 0; i < this.size(); ++i)
     	{
-    		if (x.compareTo(this.array.get(i)) == 0)
+    		if (x.equals(this.array.get(i)))
     		{
     			return i;
     		}
