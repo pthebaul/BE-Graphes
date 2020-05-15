@@ -177,6 +177,48 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         this.percolateDown(0);
         return minItem;
     }
+    
+    /**
+     * Verify is the current heap is valid
+    *
+    * @return boolean
+    */
+   public boolean isValid() {
+       if(this.currentSize <= 1)
+       {
+           return true;
+       }
+       else
+       {
+    	   return this.isValid(0);
+       }
+   }
+
+   /**
+    * Verify is the current heap is valid from the given index
+    *
+    * @param index : index to start the verification
+    * @return the validity of the heap
+    */
+   private boolean isValid(int index) {
+       E element = this.array.get(index);
+       int left = this.indexLeft(index);
+       int right = left + 1;
+
+       if(left >= this.currentSize)
+           return true;
+
+       if(element.compareTo(this.array.get(left)) > 0)
+           return false;
+
+       if(right >= this.currentSize)
+    	   return true;
+       
+       if(element.compareTo(this.array.get(right)) > 0)
+           return false;
+
+       return this.isValid(left) && this.isValid(right) ;
+   }
 
     /**
      * Creates a multi-lines string representing a sorted view of this binary heap.
