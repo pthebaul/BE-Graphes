@@ -15,6 +15,11 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     public DijkstraAlgorithm(ShortestPathData data) {
         super(data);
     }
+    
+    protected Label createLabel(Node node)
+    {
+    	return new Label(node);
+    }
 
     @Override
     protected ShortestPathSolution doRun() {
@@ -27,7 +32,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         
         for (int i = 0; i < nbNodes; ++i)
         {
-        	labels[i] = new Label(graph.get(i));
+        	labels[i] = createLabel(graph.get(i));
         }
         
         labels[data.getOrigin().getId()].setCost(0);
@@ -72,7 +77,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         				catch (ElementNotFoundException e) {}
 
         				successorLabel.setCost(current.getCost() + weight);
-        				successorLabel.setFather(successorArc);
+        				successorLabel.setPredecessorArc(successorArc);
     					heap.insert(successorLabel);
         				labels[successorNode.getId()] = successorLabel;
         			}
@@ -80,26 +85,22 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         	}
         }
         
-        ShortestPathSolution solution;
-        if (labels[data.getDestination().getId()].isMarked())
+        if (labels[data.getDestination().getId()].getPredecessorArc() == null)
         {
-	        ArrayList<Arc> Arcs = new ArrayList<Arc>();
-	        Node current = data.getDestination();
-	        while (current.compareTo(data.getOrigin()) != 0)
-	        {
-	        	Arc arc = labels[current.getId()].getFather();
-	        	Arcs.add(0, arc);
-	        	current = arc.getOrigin();
-	        }
-	        Path shortestPath = new Path(data.getGraph(), Arcs);
-	        solution = new ShortestPathSolution(data, Status.OPTIMAL, shortestPath);
-        }
-        else
-        {
-        	solution = new ShortestPathSolution(data, Status.INFEASIBLE);
+        	return new ShortestPathSolution(data, Status.INFEASIBLE);
         }
         
-        return solution;
+        ArrayList<Arc> arcs = new ArrayList<Arc>();
+        
+        Node currentNode = data.getDestination();
+        while (!currentNode.equals(data.getOrigin()))
+        {
+        	Arc arc = labels[currentNode.getId()].getPredecessorArc();
+        	arcs.add(0, arc);
+        	currentNode = arc.getOrigin();
+        }
+        Path shortestPath = new Path(data.getGraph(), arcs);
+        return new ShortestPathSolution(data, Status.OPTIMAL, shortestPath);
     }
 
 }

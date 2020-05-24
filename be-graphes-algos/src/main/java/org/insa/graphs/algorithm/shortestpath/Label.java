@@ -5,27 +5,27 @@ import org.insa.graphs.model.Node;
 
 public class Label implements Comparable<Label>{
 
-	private Node node;
-	private boolean mark;
-	private double cost;
-	private Arc father;
+	protected Node node;
+	protected boolean mark;
+	protected double costFromOrigin;
+	protected Arc predecessorArc;
 	
 	public Label(Node node)
 	{
 		this.node = node;
 		this.mark = false;
-		this.cost = Double.POSITIVE_INFINITY;
-		this.father = null;
+		this.costFromOrigin = Double.POSITIVE_INFINITY;
+		this.predecessorArc = null;
 	}
 	
 	public double getCost()
 	{
-		return this.cost;
+		return this.costFromOrigin;
 	}
 	
 	public void setCost(double cost)
 	{
-		this.cost = cost;
+		this.costFromOrigin = cost;
 	}
 	
 	public boolean isMarked()
@@ -43,24 +43,44 @@ public class Label implements Comparable<Label>{
 		return this.node;
 	}
 	
-	public void setFather(Arc father)
+	public void setPredecessorArc(Arc father)
 	{
-		this.father = father;
+		this.predecessorArc = father;
 	}
 	
-	public Arc getFather()
+	public Arc getPredecessorArc()
 	{
-		return this.father;
+		return this.predecessorArc;
+	}
+	
+	public double getTotalCost()
+	{
+		return this.costFromOrigin;
+	}
+	
+	public double getAlternateCost()
+	{
+		return this.costFromOrigin;
 	}
 
 	@Override
 	public int compareTo(Label other)
 	{
-		if (this.getCost() < other.getCost())
-			return -1;
-		else if (this.getCost() == other.getCost())
-			return 0;
+		if (Math.abs(this.getTotalCost() - other.getTotalCost()) > 1e-6)
+		{
+			return Double.compare(this.getTotalCost(), other.getTotalCost());
+		}
 		else
-			return +1;
+		{
+			return Double.compare(this.getAlternateCost(), other.getAlternateCost());
+		}
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "Node " + this.node.getId()
+		+ ", costFromOrigin = " + this.costFromOrigin
+		+ ((this.predecessorArc == null) ? ", no father" : ", father = " + this.predecessorArc.getOrigin().getId());
 	}
 }

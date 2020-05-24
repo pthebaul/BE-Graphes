@@ -1,7 +1,6 @@
 package org.insa.graphs.algorithm.shortestpath;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assume.assumeFalse;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -76,6 +75,9 @@ public class DijkstraAndAStarTest {
 			fastAlgorithm = new BellmanFordAlgorithm(dataTime);
 			break;
 		case AStar:
+			shortAlgorithm = new AStarAlgorithm(dataLength);
+			fastAlgorithm = new AStarAlgorithm(dataTime);
+			break;
 		default:
 			throw new IllegalArgumentException();
 		}
@@ -88,7 +90,7 @@ public class DijkstraAndAStarTest {
 	
 	private void compareSolutions(ShortestPathSolution A, ShortestPathSolution B)
 	{
-		// Unable to test Status, because Bellman-Ford returns Infeasible solutions for single nodes
+		assertEquals(A.getStatus(), B.getStatus());
 		
 		if (A.getStatus().equals(Status.INFEASIBLE) || A.getStatus().equals(Status.UNKNOWN)
 				|| B.getStatus().equals(Status.INFEASIBLE) || B.getStatus().equals(Status.UNKNOWN))
@@ -109,13 +111,17 @@ public class DijkstraAndAStarTest {
 		
 	}
 	
-	private void testDijkstra() throws IOException
+	private void testDijkstraAndAStar() throws IOException
 	{
-		Solutions solutionsDijkstra = runAlgorithm(Algo.Dijkstra);
 		Solutions solutionsBellmanFord = runAlgorithm(Algo.BellmanFord);
-
+		
+		Solutions solutionsDijkstra = runAlgorithm(Algo.Dijkstra);
 		compareSolutions(solutionsDijkstra.shortestSolution, solutionsBellmanFord.shortestSolution);
 		compareSolutions(solutionsDijkstra.fastestSolution, solutionsBellmanFord.fastestSolution);
+
+		Solutions solutionsAStar = runAlgorithm(Algo.AStar);
+		compareSolutions(solutionsAStar.shortestSolution, solutionsBellmanFord.shortestSolution);
+		compareSolutions(solutionsAStar.fastestSolution, solutionsBellmanFord.fastestSolution);
 	}
 
 	@Test
@@ -125,19 +131,19 @@ public class DijkstraAndAStarTest {
 		// Single node
 		this.origin = graph.get(9);
 		this.destination = graph.get(9);
-		testDijkstra();
+		testDijkstraAndAStar();
 
 		// Simple path
 		this.origin = graph.get(8);
 		this.destination = graph.get(9);
-		testDijkstra();
+		testDijkstraAndAStar();
 
 		// Complex path
 		this.origin = graph.get(9);
 		this.destination = graph.get(11);
-		testDijkstra();
+		testDijkstraAndAStar();
 	}
-	/*
+
 	@Test
 	public void testInsa() throws IOException {
 		this.graph = getGraph("insa");
@@ -145,46 +151,46 @@ public class DijkstraAndAStarTest {
 		// Single node
 		this.origin = graph.get(526);
 		this.destination = graph.get(526);
-		testDijkstra();
+		testDijkstraAndAStar();
 
 		// Easy path
 		this.origin = graph.get(200);
 		this.destination = graph.get(526);
-		testDijkstra();
+		testDijkstraAndAStar();
 
 		// Hard path
 		this.origin = graph.get(230);
 		this.destination = graph.get(955);
-		testDijkstra();
+		testDijkstraAndAStar();
 		
 		// Impossible path
 		this.origin = graph.get(183);
 		this.destination = graph.get(864);
-		testDijkstra();
+		testDijkstraAndAStar();
 	}
 	
 	@Test
-	public void testBelgium() throws IOException {
-		this.graph = getGraph("belgium");
+	public void testHauteGaronne() throws IOException {
+		this.graph = getGraph("haute-garonne");
 		
 		// Single node
-		this.origin = graph.get(600626);
-		this.destination = graph.get(600626);
-		testDijkstra();
+		this.origin = graph.get(1225);
+		this.destination = graph.get(1225);
+		testDijkstraAndAStar();
 
 		// Easy path
-		this.origin = graph.get(934886);
-		this.destination = graph.get(398672);
-		testDijkstra();
+		this.origin = graph.get(10997);
+		this.destination = graph.get(34992);
+		testDijkstraAndAStar();
 
 		// Hard path
-		this.origin = graph.get(1018131);
-		this.destination = graph.get(575257);
-		testDijkstra();
+		this.origin = graph.get(72601);
+		this.destination = graph.get(120930);
+		testDijkstraAndAStar();
 		
 		// Impossible path
-		this.origin = graph.get(967283);
-		this.destination = graph.get(179687);
-		testDijkstra();
-	}*/
+		this.origin = graph.get(142571);
+		this.destination = graph.get(78165);
+		testDijkstraAndAStar();
+	}
 }
