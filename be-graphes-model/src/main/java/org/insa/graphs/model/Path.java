@@ -18,7 +18,37 @@ import java.util.List;
  */
 public class Path {
 
-    /**
+	private interface Measurement {
+		public double measure(Arc arc);
+	}
+
+	private static Path createBestPathFromNodes(Graph graph, List<Node> nodes, Measurement m) {
+
+		if (nodes.isEmpty())
+			return new Path(graph);
+
+		if (nodes.size() == 1)
+			return new Path(graph, nodes.get(0));
+
+		List<Arc> arcs = new ArrayList<Arc>();
+		for (int i = 0; i < nodes.size() - 1; ++i) {
+			Arc bestArc = null;
+			for (Arc arc : nodes.get(i).getSuccessors()) {
+				if (arc.getDestination().equals(nodes.get(i + 1)))
+					if (bestArc == null || m.measure(arc) < m.measure(bestArc))
+						bestArc = arc;
+			}
+
+			if (bestArc == null)
+				throw new IllegalArgumentException("Every two consecutive nodes must be connected");
+			else
+				arcs.add(bestArc);
+
+		}
+		return new Path(graph, arcs);
+	}
+
+	/**
      * Create a new path that goes through the given list of nodes (in order),
      * choosing the fastest route if multiple are available.
      * 
@@ -32,46 +62,9 @@ public class Path {
      */
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
-        List<Arc> arcs = new ArrayList<Arc>();
-        if (nodes.isEmpty())
-        {
-        	return new Path(graph);
-        }
-        else if (nodes.size() == 1)
-        {
-        	return new Path(graph, nodes.get(0));
-        }
-        else
-        {
-	        for (int i = 1; i < nodes.size(); ++i)
-	        {
-	        	Arc fastestArc = null;
-	        	for (Arc arc : nodes.get(i-1).getSuccessors())
-	        	{
-	        		if (arc.getDestination() == nodes.get(i))
-	        		{
-	        			if (fastestArc == null)
-	        			{
-	        				fastestArc = arc;
-	        			}
-	        			else if (arc.getMinimumTravelTime() < fastestArc.getMinimumTravelTime())
-	        			{
-	        				fastestArc = arc;
-	        			}
-	        		}
-	        	}
-	        	if (fastestArc == null)
-	        	{
-	        		throw new IllegalArgumentException("Invalid list of nodes");
-	        	}
-	        	else
-	        	{
-	        		arcs.add(fastestArc);
-	        	}
-	        }
-	        return new Path(graph, arcs);
-        }
-    }
+		Measurement length = (arc) -> arc.getMinimumTravelTime();
+		return Path.createBestPathFromNodes(graph, nodes, length);
+	}
 
     /**
      * Create a new path that goes through the given list of nodes (in order),
@@ -87,46 +80,9 @@ public class Path {
      */
     public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
-        List<Arc> arcs = new ArrayList<Arc>();
-        if (nodes.isEmpty())
-        {
-        	return new Path(graph);
-        }
-        else if (nodes.size() == 1)
-        {
-        	return new Path(graph, nodes.get(0));
-        }
-        else
-        {
-	        for (int i = 1; i < nodes.size(); ++i)
-	        {
-	        	Arc shortestArc = null;
-	        	for (Arc arc : nodes.get(i-1).getSuccessors())
-	        	{
-	        		if (arc.getDestination() == nodes.get(i))
-	        		{
-	        			if (shortestArc == null)
-	        			{
-	        				shortestArc = arc;
-	        			}
-	        			else if (arc.getLength() < shortestArc.getLength())
-	        			{
-	        				shortestArc = arc;
-	        			}
-	        		}
-	        	}
-	        	if (shortestArc == null)
-	        	{
-	        		throw new IllegalArgumentException("Invalid list of nodes");
-	        	}
-	        	else
-	        	{
-	        		arcs.add(shortestArc);
-	        	}
-	        }
-	        return new Path(graph, arcs);
-        }
-    }
+		Measurement length = (arc) -> arc.getLength();
+		return Path.createBestPathFromNodes(graph, nodes, length);
+	}
 
     /**
      * Concatenate the given paths.
