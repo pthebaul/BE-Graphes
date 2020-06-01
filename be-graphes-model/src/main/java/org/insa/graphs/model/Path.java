@@ -267,29 +267,26 @@ public class Path {
      * @return true if the path is valid, false otherwise.
      */
     public boolean isValid() {
-    	boolean result;
+    	
     	if (this.isEmpty())
-    	{
-    		result = true;
-    	}
-    	//if the path contains a single node (without arcs)
-    	else if ((this.size() == 1) && this.getArcs().isEmpty())
-    	{
-    		result = true;
-    	}
-    	else if (this.getOrigin() == this.getArcs().get(0).getOrigin())
-    	{
-    		result = true;
-    		for (int i = 1; result && (i < this.getArcs().size()); ++i)
-    		{
-    			result = this.getArcs().get(i-1).getDestination() == this.getArcs().get(i).getOrigin();
-    		}
-    	}
-    	else
-    	{
-    		result = false;
-    	}
-        return result;
+    		return true;
+    	
+    	if ((this.size() == 1) && this.getArcs().isEmpty())
+    		return true;
+    	
+    	if (!this.getOrigin().equals(this.getArcs().get(0).getOrigin()))
+    		return false;
+    	
+		for (int i = 0; i < this.getArcs().size()-1; ++i)
+		{
+			Arc arc = this.getArcs().get(i);
+			Arc nextArc = this.getArcs().get(i+1);
+			
+			if (!arc.getDestination().equals(nextArc.getOrigin()))
+				return false;
+		}
+		
+		return true;
     }
 
     /**
