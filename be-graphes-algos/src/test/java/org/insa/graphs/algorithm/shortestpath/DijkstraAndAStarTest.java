@@ -103,11 +103,9 @@ public class DijkstraAndAStarTest {
 		
 		assertEquals(A.getPath().getOrigin(), B.getPath().getOrigin());
 		assertEquals(A.getPath().getDestination(), B.getPath().getDestination());
-		assertEquals(A.getPath().getArcs().size(), B.getPath().getArcs().size());
 		assertEquals(A.getPath().isValid(), B.getPath().isValid());
 		assertEquals(A.getPath().getLength(), B.getPath().getLength(), 1e6);
 		assertEquals(A.getPath().getMinimumTravelTime(), B.getPath().getMinimumTravelTime(), 1e6);
-		assertEquals(A.getStatus(), B.getStatus());
 		
 	}
 	
